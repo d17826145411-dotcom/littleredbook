@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>五行人格测试 · 你的人生能量地图</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%231a1a2e' stroke='%23e94560' stroke-width='3'/><text x='50' y='62' text-anchor='middle' font-size='36' fill='%23e94560' font-family='serif'>五</text></svg>">
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+<link href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root {
+  --bg: #0f0f1a;
+  --bg-card: #1a1a2e;
+  --border: #2a2a4a;
+  --text: #e8e8f0;
+  --text-dim: #8888aa;
+  --text-muted: #555577;
+  --wood: #4caf50;
+  --fire: #e94560;
+  --earth: #d4a04a;
+  --metal: #c0c0d8;
+  --water: #4a9eff;
+  --accent: #e94560;
+  --radius: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans SC', sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+.container { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+
+/* ===== Hero ===== */
+.hero {
+  padding: 56px 0 36px;
+  text-align: center;
+}
+.hero-badge {
+  display: inline-block;
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+.hero h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+.hero h1 span {
+  background: linear-gradient(135deg, #e94560 0%, #d4a04a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: 14px;
+  color: var(--text-dim);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ===== Form ===== */
+.form-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.form-group label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 5px;
+}
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+.form-group select option { background: var(--bg-card); }
+.analyze-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #e94560 0%, #c73650 100%);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 2px;
+}
+
+/* ===== Result ===== */
+.result-section { display: none; }
+.result-section.visible { display: block; animation: fadeIn 0.5s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== Personality Card ===== */
+.personality-card {
+  background: linear-gradient(145deg, #1a1a2e 0%, #221a3a 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.personality-type { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; letter-spacing: 2px; }
+.personality-name { font-family: 'Noto Serif SC', serif; font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+.personality-tagline { font-size: 13px; color: var(--text-dim); max-width: 340px; margin: 0 auto; }
+.personality-badge {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ===== Quick Tags ===== */
+.quick-tags {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.quick-tag {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 6px;
+  text-align: center;
+}
+.quick-tag-label { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; }
+.quick-tag-value { font-size: 13px; font-weight: 600; }
+
+/* ===== Chart Card ===== */
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.chart-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+.chart-container { width: 100%; height: 240px; }
+
+/* ===== Result Card ===== */
+.result-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 14px;
+}
+.result-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.result-card-icon {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.result-card-title { font-size: 15px; font-weight: 600; }
+.result-card-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; line-height: 1.7; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 7px; }
+.tag { padding: 5px 11px; border-radius: 8px; font-size: 12px; font-weight: 500; }
+
+/* ===== City List ===== */
+.city-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px;
+  background: var(--bg);
+  border-radius: 12px;
+  margin-bottom: 7px;
+  border: 1px solid var(--border);
+}
+.city-rank {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  flex-shrink: 0;
+}
+.city-info { flex: 1; min-width: 0; }
+.city-name { font-size: 13px; font-weight: 600; }
+.city-industry { font-size: 10px; color: var(--text-dim); }
+.city-score-bar { width: 70px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.city-score-fill { height: 100%; border-radius: 2px; }
+.city-percent { font-size: 11px; font-weight: 600; width: 32px; text-align: right; }
+
+/* ===== City Compare ===== */
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.compare-city {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+.compare-city-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.compare-city-score { font-size: 22px; font-weight: 700; }
+.compare-vs { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.compare-selects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.compare-selects select {
+  padding: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+/* ===== Career Grid ===== */
+.career-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.career-item {
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+.career-item.recommended { border-color: var(--accent); background: rgba(233,69,96,0.08); }
+.career-item-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.career-item-desc { font-size: 10px; color: var(--text-dim); line-height: 1.5; }
+.career-badge {
+  display: inline-block;
+  font-size: 9px; padding: 1px 5px;
+  border-radius: 4px; margin-left: 5px;
+  background: var(--accent); color: #fff;
+  vertical-align: middle;
+}
+
+/* ===== Lock ===== */
+.lock-overlay { position: relative; }
+.lock-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to bottom, transparent 30%, rgba(15,15,26,0.95) 80%);
+  border-radius: var(--radius);
+  z-index: 1;
+}
+.lock-btn {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  padding: 11px 22px;
+  background: linear-gradient(135deg, #e94560, #c73650);
+  border: none; border-radius: 10px;
+  color: #fff; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  white-space: nowrap;
+}
+
+/* ===== Action Buttons ===== */
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+.action-btn {
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+}
+.action-btn.primary { background: linear-gradient(135deg, #e94560, #c73650); color: #fff; }
+.action-btn.secondary { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
+
+/* ===== Poster Modal ===== */
+.poster-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.poster-modal.visible { display: flex; }
+.poster-canvas-wrap { max-width: 340px; width: 100%; }
+.poster-canvas-wrap canvas { width: 100%; border-radius: 16px; }
+.poster-actions { display: flex; gap: 10px; margin-top: 14px; }
+.poster-actions button {
+  flex: 1; padding: 11px;
+  border-radius: 10px; border: none;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+}
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center;
+  padding: 28px 0;
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 26px; }
+  .quick-tags { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">东方五行人格测试</div>
+    <h1>你的人生<br><span>能量地图</span></h1>
+    <p>输入出生时间，解锁你的五行人格类型、适配城市与发展赛道。</p>
+  </div>
+</section>
+
+<!-- ===== Form ===== -->
+<section class="container">
+  <div class="form-section">
+    <div class="form-row">
+      <div class="form-group">
+        <label>出生年份</label>
+        <input type="number" id="birthYear" value="1995" min="1940" max="2010">
+      </div>
+      <div class="form-group">
+        <label>出生月份</label>
+        <select id="birthMonth">
+          <option value="1">1月</option><option value="2">2月</option>
+          <option value="3">3月</option><option value="4">4月</option>
+          <option value="5">5月</option><option value="6">6月</option>
+          <option value="7">7月</option><option value="8">8月</option>
+          <option value="9">9月</option><option value="10">10月</option>
+          <option value="11">11月</option><option value="12">12月</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>出生日期</label>
+        <input type="number" id="birthDay" value="15" min="1" max="31">
+      </div>
+      <div class="form-group">
+        <label>出生时辰</label>
+        <select id="birthHour">
+          <option value="0">子时 (23:00-01:00)</option>
+          <option value="2">丑时 (01:00-03:00)</option>
+          <option value="4">寅时 (03:00-05:00)</option>
+          <option value="6">卯时 (05:00-07:00)</option>
+          <option value="8">辰时 (07:00-09:00)</option>
+          <option value="10">巳时 (09:00-11:00)</option>
+          <option value="12" selected>午时 (11:00-13:00)</option>
+          <option value="14">未时 (13:00-15:00)</option>
+          <option value="16">申时 (15:00-17:00)</option>
+          <option value="18">酉时 (17:00-19:00)</option>
+          <option value="20">戌时 (19:00-21:00)</option>
+          <option value="22">亥时 (21:00-23:00)</option>
+        </select>
+      </div>
+    </div>
+    <button class="analyze-btn" onclick="analyze()">开始测试</button>
+  </div>
+</section>
+
+<!-- ===== Result ===== -->
+<section class="container result-section" id="results">
+
+  <div class="personality-card">
+    <div class="personality-type">你的五行人格类型</div>
+    <div class="personality-name" id="personalityName">—</div>
+    <div class="personality-tagline" id="personalityTagline">—</div>
+    <div class="personality-badge" id="personalityBadge">—</div>
+  </div>
+
+  <div class="quick-tags" id="quickTags"></div>
+
+  <div class="chart-card">
+    <h3>你的五行能量分布</h3>
+    <div class="chart-container" id="radarChart"></div>
+    <div id="wuxingList" style="margin-top:16px;"></div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">
+      <div class="result-card-icon" style="background:rgba(212,160,74,0.15); color:var(--earth);">理</div>
+      <div class="result-card-title">五行生克原理</div>
+    </div>
+    <p class="result-card-desc">
+      <strong style="color:var(--wood)">木</strong>生火、<strong style="color:var(--fire)">火</strong>生土、<strong style="color:var(--earth)">土</strong>生金、<strong style="color:var(--metal)">金</strong>生水、<strong style="color:var(--water)">水</strong>生木——这是五行相生的循环，代表能量的滋养与流转。<br><br>
+      <strong style="color:var(--wood)">木</strong>克土、<strong style="color:var(--earth)">土</strong>克水、<strong style="color:var(--water)">水</strong>克火、<strong style="color:var(--fire)">火</strong>克金、<strong style="color:var(--metal)">金</strong>克木——这是五行相克的制衡，代表能量的约束与平衡。<br><br>
+      你的命局中，五行能量越均衡，整体越顺畅；某一行过旺或过弱，就需要通过方位、行业、环境来补偏救弊。
+    </p>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">
+      <div class="result-card-icon" style="background:rgba(74,158,255,0.15); color:var(--water);">析</div>
+      <div class="result-card-title">五行能量解读</div>
+    </div>
+    <p class="result-card-desc" id="wuxingAnalysis"></p>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">
+      <div class="result-card-icon" id="cityIcon" style="background:rgba(233,69,96,0.15); color:var(--fire);">城</div>
+      <div class="result-card-title">适合发展的城市</div>
+    </div>
+    <p class="result-card-desc" id="cityDesc"></p>
+    <div id="cityList"></div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">
+      <div class="result-card-icon" id="industryIcon" style="background:rgba(76,175,80,0.15); color:var(--wood);">业</div>
+      <div class="result-card-title">适合的事业赛道</div>
+    </div>
+    <p class="result-card-desc" id="industryDesc"></p>
+    <div class="tag-list" id="industryTags"></div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">
+      <div class="result-card-icon" id="careerIcon" style="background:rgba(74,158,255,0.15); color:var(--water);">职</div>
+      <div class="result-card-title">发展模式推荐</div>
+    </div>
+    <p class="result-card-desc">根据你的能量特质，判断最适合的职业发展路径。</p>
+    <div class="career-grid" id="careerGrid"></div>
+  </div>
+
+  <!-- City Compare -->
+  <div class="result-card">
+    <div class="result-card-header">
+      <div class="result-card-icon" style="background:rgba(212,160,74,0.15); color:var(--earth);">比</div>
+      <div class="result-card-title">城市适配对比</div>
+    </div>
+    <p class="result-card-desc">选两个城市对比，看哪个更适合你。</p>
+    <div class="compare-selects">
+      <select id="compareCity1" onchange="renderCompare()">
+        <optgroup label="华北">
+          <option value="beijing">北京</option><option value="tianjin">天津</option>
+          <option value="shijiazhuang">石家庄</option><option value="tangshan">唐山</option>
+          <option value="taiyuan">太原</option><option value="huhehaote">呼和浩特</option><option value="baotou">包头</option>
+        </optgroup>
+        <optgroup label="东北">
+          <option value="shenyang">沈阳</option><option value="dalian">大连</option>
+          <option value="changchun">长春</option><option value="haerbin">哈尔滨</option><option value="jilin">吉林市</option>
+        </optgroup>
+        <optgroup label="华东">
+          <option value="shanghai">上海</option><option value="nanjing">南京</option>
+          <option value="hangzhou">杭州</option><option value="suzhou">苏州</option>
+          <option value="ningbo">宁波</option><option value="wuxi">无锡</option>
+          <option value="qingdao">青岛</option><option value="jinan">济南</option>
+          <option value="changzhou">常州</option><option value="wenzhou">温州</option>
+          <option value="nantong">南通</option><option value="xuzhou">徐州</option><option value="shaoxing">绍兴</option>
+        </optgroup>
+        <optgroup label="华南">
+          <option value="shenzhen">深圳</option><option value="guangzhou">广州</option>
+          <option value="xiamen">厦门</option><option value="fuzhou">福州</option>
+          <option value="dongguan">东莞</option><option value="foshan">佛山</option>
+          <option value="zhuhai">珠海</option><option value="nanning">南宁</option>
+          <option value="huizhou">惠州</option><option value="haikou">海口</option><option value="guilin">桂林</option>
+        </optgroup>
+        <optgroup label="华中">
+          <option value="wuhan">武汉</option><option value="changsha">长沙</option>
+          <option value="zhengzhou">郑州</option><option value="nanchang">南昌</option>
+          <option value="luoyang">洛阳</option><option value="yichang">宜昌</option><option value="xiangyang">襄阳</option>
+        </optgroup>
+        <optgroup label="西部">
+          <option value="chengdu">成都</option><option value="chongqing">重庆</option>
+          <option value="xian">西安</option><option value="kunming">昆明</option>
+          <option value="guiyang">贵阳</option><option value="lanzhou">兰州</option>
+          <option value="wulumuqi">乌鲁木齐</option><option value="mianyang">绵阳</option>
+          <option value="deyang">德阳</option><option value="xining">西宁</option>
+          <option value="yinchuan">银川</option><option value="qujing">曲靖</option>
+          <option value="dali">大理</option><option value="lasa">拉萨</option>
+        </optgroup>
+      </select>
+      <select id="compareCity2" onchange="renderCompare()">
+        <optgroup label="华北">
+          <option value="beijing">北京</option><option value="tianjin">天津</option>
+          <option value="shijiazhuang">石家庄</option><option value="tangshan">唐山</option>
+          <option value="taiyuan">太原</option><option value="huhehaote">呼和浩特</option><option value="baotou">包头</option>
+        </optgroup>
+        <optgroup label="东北">
+          <option value="shenyang">沈阳</option><option value="dalian">大连</option>
+          <option value="changchun">长春</option><option value="haerbin">哈尔滨</option><option value="jilin">吉林市</option>
+        </optgroup>
+        <optgroup label="华东">
+          <option value="shanghai">上海</option><option value="nanjing">南京</option>
+          <option value="hangzhou" selected>杭州</option><option value="suzhou">苏州</option>
+          <option value="ningbo">宁波</option><option value="wuxi">无锡</option>
+          <option value="qingdao">青岛</option><option value="jinan">济南</option>
+          <option value="changzhou">常州</option><option value="wenzhou">温州</option>
+          <option value="nantong">南通</option><option value="xuzhou">徐州</option><option value="shaoxing">绍兴</option>
+        </optgroup>
+        <optgroup label="华南">
+          <option value="shenzhen">深圳</option><option value="guangzhou">广州</option>
+          <option value="xiamen">厦门</option><option value="fuzhou">福州</option>
+          <option value="dongguan">东莞</option><option value="foshan">佛山</option>
+          <option value="zhuhai">珠海</option><option value="nanning">南宁</option>
+          <option value="huizhou">惠州</option><option value="haikou">海口</option><option value="guilin">桂林</option>
+        </optgroup>
+        <optgroup label="华中">
+          <option value="wuhan">武汉</option><option value="changsha">长沙</option>
+          <option value="zhengzhou">郑州</option><option value="nanchang">南昌</option>
+          <option value="luoyang">洛阳</option><option value="yichang">宜昌</option><option value="xiangyang">襄阳</option>
+        </optgroup>
+        <optgroup label="西部">
+          <option value="chengdu">成都</option><option value="chongqing">重庆</option>
+          <option value="xian">西安</option><option value="kunming">昆明</option>
+          <option value="guiyang">贵阳</option><option value="lanzhou">兰州</option>
+          <option value="wulumuqi">乌鲁木齐</option><option value="mianyang">绵阳</option>
+          <option value="deyang">德阳</option><option value="xining">西宁</option>
+          <option value="yinchuan">银川</option><option value="qujing">曲靖</option>
+          <option value="dali">大理</option><option value="lasa">拉萨</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="compare-row" id="compareResult"></div>
+  </div>
+
+  <div class="action-row">
+    <button class="action-btn primary" onclick="generatePoster()">生成分享海报</button>
+    <button class="action-btn secondary" onclick="retake()">重新测试</button>
+  </div>
+
+</section>
+
+<!-- ===== Poster Modal ===== -->
+<div class="poster-modal" id="posterModal" onclick="if(event.target===this) closePoster()">
+  <div class="poster-canvas-wrap">
+    <canvas id="posterCanvas" width="600" height="900"></canvas>
+    <div class="poster-actions">
+      <button onclick="downloadPoster()" style="background:linear-gradient(135deg,#e94560,#c73650); color:#fff;">保存图片</button>
+      <button onclick="closePoster()" style="background:#2a2a4a; color:#fff;">关闭</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    本测试基于传统五行文化生成，仅供娱乐与自我探索参考<br>
+    不构成任何人生决策依据 · © 五行人格测试
+  </div>
+</footer>
+
+<script>
+// ===== 数据 =====
+const WUXING = {
+  wood: { name: '木', color: '#4caf50', direction: '东', lucky: '绿色', number: '3、8', direction2: '东方' },
+  fire: { name: '火', color: '#e94560', direction: '南', lucky: '红色', number: '2、7', direction2: '南方' },
+  earth: { name: '土', color: '#d4a04a', direction: '中', lucky: '黄色', number: '5、0', direction2: '中原' },
+  metal: { name: '金', color: '#c0c0d8', direction: '西', lucky: '白色', number: '4、9', direction2: '西方' },
+  water: { name: '水', color: '#4a9eff', direction: '北', lucky: '黑色', number: '1、6', direction2: '北方' }
+};
+
+const PERSONALITY_TYPES = {
+  wood_strong: { name: '生长型人格', tagline: '如大树般向上生长，有韧性、有目标，适合在广阔空间里发展。', badge: '成长力 MAX' },
+  wood_weak: { name: '攀援型人格', tagline: '如藤蔓般灵活适应，善于借势生长，在合作中发光发热。', badge: '适应力 MAX' },
+  fire_strong: { name: '燃烧型人格', tagline: '如烈日般热情耀眼，感染力强，适合做聚光灯下的引领者。', badge: '感染力 MAX' },
+  fire_weak: { name: '星火型人格', tagline: '如星火般温暖而持久，小而美的能量，在细节中绽放光芒。', badge: '温暖力 MAX' },
+  earth_strong: { name: '山岳型人格', tagline: '如山岳般稳重可靠，值得托付，是团队里的定海神针。', badge: '可靠力 MAX' },
+  earth_weak: { name: '大地型人格', tagline: '如大地般包容滋养，默默付出，在守护中实现自我价值。', badge: '包容力 MAX' },
+  metal_strong: { name: '利剑型人格', tagline: '如利剑般果断锋利，执行力强，适合开疆拓土的先锋角色。', badge: '执行力 MAX' },
+  metal_weak: { name: '首饰型人格', tagline: '如首饰般精致内敛，注重品质，在审美与专业中展现魅力。', badge: '精致力 MAX' },
+  water_strong: { name: '江河型人格', tagline: '如江河般奔流不息，智慧灵动，能在变化中找到出路。', badge: '智慧力 MAX' },
+  water_weak: { name: '雨露型人格', tagline: '如雨露般细腻柔和，润物无声，在沟通与连接中创造价值。', badge: '共情力 MAX' }
+};
+
+const TIANGAN = [
+  { name: '甲', elem: 'wood' }, { name: '乙', elem: 'wood' },
+  { name: '丙', elem: 'fire' }, { name: '丁', elem: 'fire' },
+  { name: '戊', elem: 'earth' }, { name: '己', elem: 'earth' },
+  { name: '庚', elem: 'metal' }, { name: '辛', elem: 'metal' },
+  { name: '壬', elem: 'water' }, { name: '癸', elem: 'water' }
+];
+const DIZHI = [
+  { name: '子', elem: 'water' }, { name: '丑', elem: 'earth' },
+  { name: '寅', elem: 'wood' }, { name: '卯', elem: 'wood' },
+  { name: '辰', elem: 'earth' }, { name: '巳', elem: 'fire' },
+  { name: '午', elem: 'fire' }, { name: '未', elem: 'earth' },
+  { name: '申', elem: 'metal' }, { name: '酉', elem: 'metal' },
+  { name: '戌', elem: 'earth' }, { name: '亥', elem: 'water' }
+];
+
+const CITIES = {
+  wood: [
+    { name: '上海', industries: '金融贸易 · 互联网 · 时尚', score: 95 },
+    { name: '杭州', industries: '电商 · 数字经济 · 文创', score: 93 },
+    { name: '南京', industries: '科研教育 · 电子 · 文旅', score: 90 },
+    { name: '苏州', industries: '制造业 · 生物医药 · 精密加工', score: 88 },
+    { name: '青岛', industries: '海洋经济 · 家电 · 外贸', score: 86 },
+    { name: '宁波', industries: '港口物流 · 制造业 · 外贸', score: 84 },
+    { name: '无锡', industries: '集成电路 · 新能源 · 生物医药', score: 83 },
+    { name: '常州', industries: '智能制造 · 新能源 · 装备', score: 81 },
+    { name: '绍兴', industries: '纺织 · 化工 · 文旅', score: 79 },
+    { name: '温州', industries: '民营经济 · 制造业 · 商贸', score: 78 },
+    { name: '南通', industries: '建筑 · 海洋工程 · 纺织', score: 77 },
+    { name: '徐州', industries: '装备制造 · 能源 · 商贸物流', score: 76 }
+  ],
+  fire: [
+    { name: '深圳', industries: '科技 · 电子 · 创新创业', score: 96 },
+    { name: '广州', industries: '商贸 · 汽车 · 餐饮', score: 92 },
+    { name: '长沙', industries: '文化传媒 · 工程机械 · 消费', score: 89 },
+    { name: '厦门', industries: '文旅 · 金融 · 外贸', score: 87 },
+    { name: '福州', industries: '数字产业 · 海洋经济 · 纺织', score: 85 },
+    { name: '东莞', industries: '制造业 · 电子 · 智能制造', score: 84 },
+    { name: '佛山', industries: '制造业 · 陶瓷 · 家具', score: 83 },
+    { name: '珠海', industries: '生物医药 · 文旅 · 科创', score: 82 },
+    { name: '南宁', industries: '东盟贸易 · 农业 · 文旅', score: 80 },
+    { name: '惠州', industries: '电子 · 石化 · 新能源', score: 79 },
+    { name: '海口', industries: '旅游 · 自贸 · 康养', score: 78 },
+    { name: '桂林', industries: '旅游 · 农业 · 文创', score: 76 }
+  ],
+  earth: [
+    { name: '郑州', industries: '交通物流 · 装备制造 · 食品', score: 91 },
+    { name: '武汉', industries: '光电子 · 汽车 · 科教', score: 90 },
+    { name: '重庆', industries: '汽车 · 电子信息 · 智能制造', score: 88 },
+    { name: '西安', industries: '航空航天 · 军工 · 文旅', score: 86 },
+    { name: '合肥', industries: '家电 · 新能源 · 半导体', score: 85 },
+    { name: '长沙', industries: '文化传媒 · 工程机械 · 消费', score: 84 },
+    { name: '太原', industries: '能源 · 重化工 · 装备', score: 82 },
+    { name: '石家庄', industries: '医药 · 纺织 · 商贸', score: 80 },
+    { name: '南昌', industries: '航空 · 光电 · 新能源', score: 79 },
+    { name: '洛阳', industries: '装备制造 · 文旅 · 新材料', score: 78 },
+    { name: '宜昌', industries: '水电 · 化工 · 文旅', score: 77 },
+    { name: '襄阳', industries: '汽车 · 装备制造 · 医药', score: 76 }
+  ],
+  metal: [
+    { name: '成都', industries: '电子信息 · 生物医药 · 文旅', score: 92 },
+    { name: '昆明', industries: '旅游 · 烟草 · 生物医药', score: 87 },
+    { name: '贵阳', industries: '大数据 · 新能源 · 生态产业', score: 85 },
+    { name: '兰州', industries: '石油化工 · 新能源 · 物流', score: 83 },
+    { name: '乌鲁木齐', industries: '能源 · 农业 · 边境贸易', score: 81 },
+    { name: '绵阳', industries: '电子信息 · 军工 · 科研', score: 80 },
+    { name: '德阳', industries: '装备制造 · 核电 · 化工', score: 78 },
+    { name: '西宁', industries: '新能源 · 盐湖化工 · 文旅', score: 76 },
+    { name: '银川', industries: '能源 · 化工 · 枸杞产业', score: 75 },
+    { name: '曲靖', industries: '矿业 · 农业 · 新能源', score: 74 },
+    { name: '大理', industries: '文旅 · 农业 · 康养', score: 73 },
+    { name: '拉萨', industries: '文旅 · 矿业 · 特色农业', score: 72 }
+  ],
+  water: [
+    { name: '北京', industries: '总部经济 · 互联网 · 文化', score: 95 },
+    { name: '天津', industries: '航空航天 · 物流 · 金融', score: 89 },
+    { name: '济南', industries: '装备制造 · 医药 · 金融', score: 86 },
+    { name: '沈阳', industries: '装备制造 · 汽车 · 医疗', score: 84 },
+    { name: '大连', industries: '港口物流 · 软件 · 海洋经济', score: 83 },
+    { name: '哈尔滨', industries: '装备制造 · 医药 · 对俄贸易', score: 82 },
+    { name: '长春', industries: '汽车 · 光电 · 生物医药', score: 81 },
+    { name: '唐山', industries: '钢铁 · 装备 · 化工', score: 79 },
+    { name: '石家庄', industries: '医药 · 纺织 · 商贸', score: 78 },
+    { name: '呼和浩特', industries: '乳业 · 能源 · 文旅', score: 77 },
+    { name: '包头', industries: '稀土 · 钢铁 · 装备', score: 76 },
+    { name: '吉林', industries: '化工 · 汽车 · 医药', score: 75 }
+  ]
+};
+
+const CITY_ELEM = {
+  shanghai: 'wood', hangzhou: 'wood', nanjing: 'wood', suzhou: 'wood',
+  qingdao: 'wood', ningbo: 'wood', wuxi: 'wood', changzhou: 'wood',
+  shaoxing: 'wood', wenzhou: 'wood', nantong: 'wood', xuzhou: 'wood',
+  shenzhen: 'fire', guangzhou: 'fire', changsha: 'fire', xiamen: 'fire',
+  fuzhou: 'fire', dongguan: 'fire', foshan: 'fire', zhuhai: 'fire',
+  nanning: 'fire', huizhou: 'fire', haikou: 'fire', guilin: 'fire',
+  zhengzhou: 'earth', wuhan: 'earth', chongqing: 'earth', xian: 'earth',
+  hefei: 'earth', taiyuan: 'earth', shijiazhuang: 'earth', nanchang: 'earth',
+  luoyang: 'earth', yichang: 'earth', xiangyang: 'earth',
+  chengdu: 'metal', kunming: 'metal', guiyang: 'metal', lanzhou: 'metal',
+  wulumuqi: 'metal', mianyang: 'metal', deyang: 'metal', xining: 'metal',
+  yinchuan: 'metal', qujing: 'metal', dali: 'metal', lasa: 'metal',
+  beijing: 'water', tianjin: 'water', jinan: 'water', shenyang: 'water',
+  dalian: 'water', haerbin: 'water', changchun: 'water', tangshan: 'water',
+  huhehaote: 'water', baotou: 'water', jilin: 'water'
+};
+const CITY_NAMES = {
+  shanghai: '上海', hangzhou: '杭州', nanjing: '南京', suzhou: '苏州',
+  qingdao: '青岛', ningbo: '宁波', wuxi: '无锡', changzhou: '常州',
+  shaoxing: '绍兴', wenzhou: '温州', nantong: '南通', xuzhou: '徐州',
+  shenzhen: '深圳', guangzhou: '广州', changsha: '长沙', xiamen: '厦门',
+  fuzhou: '福州', dongguan: '东莞', foshan: '佛山', zhuhai: '珠海',
+  nanning: '南宁', huizhou: '惠州', haikou: '海口', guilin: '桂林',
+  zhengzhou: '郑州', wuhan: '武汉', chongqing: '重庆', xian: '西安',
+  hefei: '合肥', taiyuan: '太原', shijiazhuang: '石家庄', nanchang: '南昌',
+  luoyang: '洛阳', yichang: '宜昌', xiangyang: '襄阳',
+  chengdu: '成都', kunming: '昆明', guiyang: '贵阳', lanzhou: '兰州',
+  wulumuqi: '乌鲁木齐', mianyang: '绵阳', deyang: '德阳', xining: '西宁',
+  yinchuan: '银川', qujing: '曲靖', dali: '大理', lasa: '拉萨',
+  beijing: '北京', tianjin: '天津', jinan: '济南', shenyang: '沈阳',
+  dalian: '大连', haerbin: '哈尔滨', changchun: '长春', tangshan: '唐山',
+  huhehaote: '呼和浩特', baotou: '包头', jilin: '吉林市'
+};
+
+const INDUSTRIES = {
+  wood: ['教育培训', '文化出版', '林业农业', '纺织服装', '家具家居', '中医养生', '园林景观', '文创设计'],
+  fire: ['能源电力', '电子半导体', '互联网科技', '餐饮食品', '美容美妆', '照明光电', '影视传媒', '心理咨询'],
+  earth: ['房地产', '建筑工程', '建材陶瓷', '农业畜牧', '仓储物流', '矿业资源', '保险信托', '公共服务'],
+  metal: ['金融银行', '证券投资', '机械制造', '汽车工业', '五金珠宝', '法律合规', '航空航天', 'IT硬件'],
+  water: ['物流运输', '旅游酒店', '国际贸易', '水产渔业', '通信通讯', '软件互联网', '饮料酒水', '传媒公关']
+};
+
+const CAREER_PATHS = [
+  { key: 'gov', name: '稳定发展型', desc: '适合考公、事业单位或大型企业，走稳定晋升路线' },
+  { key: 'startup', name: '独立创业型', desc: '适合单干、做副业或自由职业，靠技能和才华变现' },
+  { key: 'corp', name: '职场进阶型', desc: '适合在大型企业做专业岗或管理层，稳步上升' },
+  { key: 'partner', name: '合伙发展型', desc: '适合与人合伙做事，借助团队力量共同成长' }
+];
+
+// ===== 节气 =====
+const JIEQI = [
+  [1,6,1],[2,4,2],[3,6,3],[4,5,4],[5,6,5],[6,6,6],
+  [7,7,7],[8,8,8],[9,8,9],[10,8,10],[11,7,11],[12,7,0]
+];
+
+function getSolarTermMonth(year, month, day) {
+  const dateNum = month * 100 + day;
+  let zhiIndex = 0, baziYear = year;
+  for (let i = JIEQI.length - 1; i >= 0; i--) {
+    const [jm, jd, zi] = JIEQI[i];
+    if (dateNum >= jm * 100 + jd) { zhiIndex = zi; break; }
+  }
+  if (month < 2 || (month === 2 && day < 4)) baziYear = year - 1;
+  return { zhiIndex, baziYear };
+}
+
+function getYearPillar(y) {
+  const o = y - 4;
+  return { ganIndex: ((o%10)+10)%10, zhiIndex: ((o%12)+12)%12 };
+}
+function getMonthPillar(yg, mz) {
+  const m = { 0:2, 1:4, 2:6, 3:8, 4:0, 5:2, 6:4, 7:6, 8:8, 9:0 }[yg];
+  return { ganIndex: (m + (mz - 2 + 12) % 12) % 10, zhiIndex: mz };
+}
+function getDayPillar(y, m, d) {
+  const base = new Date(1900, 0, 1);
+  const diff = Math.round((new Date(y, m-1, d) - base) / 86400000);
+  return { ganIndex: ((diff%10)+10)%10, zhiIndex: ((10+diff)%12+12)%12 };
+}
+function getHourPillar(dg, h) {
+  const m = { 0:0, 1:2, 2:4, 3:6, 4:8, 5:0, 6:2, 7:4, 8:6, 9:8 }[dg];
+  const zi = Math.floor(h/2) % 12;
+  return { ganIndex: (m + zi) % 10, zhiIndex: zi };
+}
+
+// ===== 地支藏干表 =====
+const CANGGAN = [
+  [{elem:'water', w:1.0}],                    // 子
+  [{elem:'earth', w:0.6},{elem:'water', w:0.3},{elem:'metal', w:0.1}],  // 丑
+  [{elem:'wood', w:0.6},{elem:'fire', w:0.3},{elem:'earth', w:0.1}],    // 寅
+  [{elem:'wood', w:1.0}],                      // 卯
+  [{elem:'earth', w:0.6},{elem:'wood', w:0.3},{elem:'water', w:0.1}],  // 辰
+  [{elem:'fire', w:0.6},{elem:'metal', w:0.3},{elem:'earth', w:0.1}],   // 巳
+  [{elem:'fire', w:0.7},{elem:'earth', w:0.3}],  // 午
+  [{elem:'earth', w:0.6},{elem:'fire', w:0.3},{elem:'wood', w:0.1}],    // 未
+  [{elem:'metal', w:0.6},{elem:'water', w:0.3},{elem:'earth', w:0.1}],   // 申
+  [{elem:'metal', w:1.0}],                     // 酉
+  [{elem:'earth', w:0.6},{elem:'metal', w:0.3},{elem:'fire', w:0.1}],    // 戌
+  [{elem:'water', w:0.7},{elem:'wood', w:0.3}]   // 亥
+];
+
+// 月令旺相休囚死
+const MONTH_WANG = {
+  2: { wood:1.0, fire:0.5, water:0, metal:0, earth:0 },      // 寅木旺
+  3: { wood:1.0, fire:0.5, water:0, metal:0, earth:0 },      // 卯木旺
+  5: { fire:1.0, earth:0.5, wood:0, water:0, metal:0 },      // 巳火旺
+  6: { fire:1.0, earth:0.5, wood:0, water:0, metal:0 },      // 午火旺
+  8: { metal:1.0, water:0.5, earth:0, fire:0, wood:0 },      // 申金旺
+  9: { metal:1.0, water:0.5, earth:0, fire:0, wood:0 },      // 酉金旺
+  11: { water:1.0, wood:0.5, metal:0, earth:0, fire:0 },     // 亥水旺
+  0: { water:1.0, wood:0.5, metal:0, earth:0, fire:0 },     // 子水旺
+  4: { earth:1.0, metal:0.5, fire:0, wood:0, water:0 },      // 辰土旺
+  7: { earth:1.0, metal:0.5, fire:0, wood:0, water:0 },      // 未土旺
+  10: { earth:1.0, metal:0.5, fire:0, wood:0, water:0 },     // 戌土旺
+  1: { earth:1.0, metal:0.5, fire:0, wood:0, water:0 }       // 丑土旺
+};
+
+function getWuxingCount(y, m, d, h) {
+  const { zhiIndex: mz, baziYear } = getSolarTermMonth(y, m, d);
+  const yp = getYearPillar(baziYear);
+  const mp = getMonthPillar(yp.ganIndex, mz);
+  const dp = getDayPillar(y, m, d);
+  const hp = getHourPillar(dp.ganIndex, h);
+
+  const counts = { wood:0, fire:0, earth:0, metal:0, water:0 };
+  const rawCounts = { wood:0, fire:0, earth:0, metal:0, water:0 }; // 原始计数用于展示
+
+  // 天干：本气1.0
+  [yp, mp, dp, hp].forEach(p => {
+    counts[TIANGAN[p.ganIndex].elem] += 1.0;
+    rawCounts[TIANGAN[p.ganIndex].elem]++;
+  });
+
+  // 地支藏干：按权重
+  [yp, mp, dp, hp].forEach(p => {
+    CANGGAN[p.zhiIndex].forEach(cg => {
+      counts[cg.elem] += cg.w;
+      rawCounts[cg.elem]++;
+    });
+  });
+
+  // 月令加权
+  const monthBoost = MONTH_WANG[mz] || {};
+  for (let e in counts) {
+    counts[e] += monthBoost[e] || 0;
+  }
+
+  // 直接返回原始加权值，让雷达图显示真实比例
+  return {
+    counts: counts,
+    rawCounts: rawCounts,
+    dayMasterElem: TIANGAN[dp.ganIndex].elem,
+    monthZhi: mz
+  };
+}
+
+function getStrength(counts, dm, monthZhi) {
+  const sheng = { wood:'water', fire:'wood', earth:'fire', metal:'earth', water:'metal' };
+  // 得令：日主在月令旺相
+  const monthBoost = MONTH_WANG[monthZhi] || {};
+  const deLing = monthBoost[dm] > 0 ? 1 : 0;
+  // 得地：日主和印星在四柱中的总权重
+  const deDi = counts[dm] + counts[sheng[dm]];
+  // 综合判断
+  const score = deLing * 2 + deDi;
+  if (score >= 4.5) return 'strong';
+  if (score <= 2.0) return 'weak';
+  return 'medium';
+}
+
+function getClimate(mz) {
+  if (mz === 11 || mz === 0 || mz === 1) return { need: 'fire', desc: '生于亥子丑月，水寒土冻，命局偏寒。需火调候暖局，推荐南方火旺之地发展。' };
+  if (mz === 5 || mz === 6 || mz === 7) return { need: 'water', desc: '生于巳午未月，火炎土燥，命局偏燥。需水润局调候，推荐北方或近水之地发展。' };
+  return { need: null, desc: '生于寅卯辰申酉戌月，气候温和，调候需求不明显，重点看五行喜用选择方向。' };
+}
+
+function getXiYong(counts, dm, strength) {
+  const sheng = { wood:'water', fire:'wood', earth:'fire', metal:'earth', water:'metal' };
+  const ke = { wood:'metal', fire:'water', earth:'wood', metal:'fire', water:'earth' };
+  const woS = { wood:'fire', fire:'earth', earth:'metal', metal:'water', water:'wood' };
+  const woK = { wood:'earth', fire:'metal', earth:'water', metal:'wood', water:'fire' };
+  if (strength === 'weak') return [dm, sheng[dm]];
+  if (strength === 'strong') return [ke[dm], woS[dm], woK[dm]];
+  // 中和：找最弱的补
+  let minE = 'wood', minC = 99;
+  for (let e in counts) { if (counts[e] < minC) { minC = counts[e]; minE = e; } }
+  return [minE];
+}
+
+function getCareerScores(counts, dm, strength) {
+  const ke = { wood:'metal', fire:'water', earth:'wood', metal:'fire', water:'earth' };
+  const woS = { wood:'fire', fire:'earth', earth:'metal', metal:'water', water:'wood' };
+  const woK = { wood:'earth', fire:'metal', earth:'water', metal:'wood', water:'fire' };
+  const s = { gov:0, startup:0, corp:0, partner:0 };
+  if (counts[ke[dm]] >= 1.5) s.gov += 3;
+  if (strength === 'strong') s.gov += 1;
+  if (counts[woS[dm]] >= 1.5) s.startup += 3;
+  if (counts[woS[dm]] >= 1.0 && strength === 'strong') s.startup += 2;
+  if (counts[woK[dm]] >= 1.5) s.corp += 3;
+  if (strength === 'medium') s.corp += 2;
+  if (counts[dm] >= 2.0) s.partner += 3;
+  return s;
+}
+
+// ===== 主分析 =====
+let resultData = null;
+
+function analyze() {
+  const y = +document.getElementById('birthYear').value;
+  const m = +document.getElementById('birthMonth').value;
+  const d = +document.getElementById('birthDay').value;
+  const h = +document.getElementById('birthHour').value;
+
+  const result = getWuxingCount(y, m, d, h);
+  const counts = result.counts;
+  const dayMasterElem = result.dayMasterElem;
+  const monthZhi = result.monthZhi;
+  const strength = getStrength(counts, dayMasterElem, monthZhi);
+  const climate = getClimate(monthZhi);
+  const xiYong = getXiYong(counts, dayMasterElem, strength);
+  const careerScores = getCareerScores(counts, dayMasterElem, strength);
+
+  resultData = { counts, dayMasterElem, strength, climate, xiYong, careerScores };
+
+  const typeKey = `${dayMasterElem}_${strength === 'medium' ? 'strong' : strength}`;
+  const pType = PERSONALITY_TYPES[typeKey];
+  const ec = WUXING[dayMasterElem].color;
+
+  document.getElementById('personalityName').textContent = pType.name;
+  document.getElementById('personalityName').style.color = ec;
+  document.getElementById('personalityTagline').textContent = pType.tagline;
+  document.getElementById('personalityBadge').textContent = pType.badge;
+  document.getElementById('personalityBadge').style.background = ec + '22';
+  document.getElementById('personalityBadge').style.color = ec;
+
+  // Quick tags
+  const wd = WUXING[dayMasterElem];
+  document.getElementById('quickTags').innerHTML = `
+    <div class="quick-tag"><div class="quick-tag-label">主能量</div><div class="quick-tag-value" style="color:${ec}">${wd.name}</div></div>
+    <div class="quick-tag"><div class="quick-tag-label">幸运色</div><div class="quick-tag-value">${wd.lucky}</div></div>
+    <div class="quick-tag"><div class="quick-tag-label">幸运数字</div><div class="quick-tag-value">${wd.number}</div></div>
+    <div class="quick-tag"><div class="quick-tag-label">适合方位</div><div class="quick-tag-value">${wd.direction2}</div></div>
+  `;
+
+  // 不归一化，直接用原始加权值，让比例真实可见
+  const rawMax = Math.max(...Object.values(counts));
+  const radarMax = Math.ceil(rawMax + 1);
+
+  // Radar
+  const chart = echarts.init(document.getElementById('radarChart'));
+  chart.setOption({
+    backgroundColor: 'transparent',
+    radar: {
+      indicator: [
+        {name:'木', max: radarMax},
+        {name:'火', max: radarMax},
+        {name:'土', max: radarMax},
+        {name:'金', max: radarMax},
+        {name:'水', max: radarMax}
+      ],
+      shape: 'polygon',
+      splitArea: { areaStyle: { color: ['rgba(255,255,255,0.02)'] } },
+      axisLine: { lineStyle: { color: '#2a2a4a' } },
+      splitLine: { lineStyle: { color: '#2a2a4a' } },
+      axisName: { color: '#8888aa', fontSize: 12 }
+    },
+    series: [{ type: 'radar', data: [{
+      value: [counts.wood, counts.fire, counts.earth, counts.metal, counts.water].map(v => Math.round(v*10)/10),
+      areaStyle: { color: ec + '40' },
+      lineStyle: { color: ec, width: 2 },
+      itemStyle: { color: ec },
+      label: { show: true, fontSize: 11, color: '#e8e8f0' }
+    }]}]
+  });
+  window.addEventListener('resize', () => chart.resize());
+
+  // 五行数值列表
+  const totalWuxing = counts.wood + counts.fire + counts.earth + counts.metal + counts.water;
+  const wuxingOrder = ['wood', 'fire', 'earth', 'metal', 'water'];
+  document.getElementById('wuxingList').innerHTML = wuxingOrder.map(e => {
+    const w = WUXING[e];
+    const pct = Math.round((counts[e] / totalWuxing) * 100);
+    return `
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+        <div style="width:24px; height:24px; border-radius:6px; background:${w.color}22; color:${w.color}; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">${w.name}</div>
+        <div style="flex:1; height:8px; background:var(--bg); border-radius:4px; overflow:hidden;">
+          <div style="height:100%; width:${pct}%; background:${w.color}; border-radius:4px;"></div>
+        </div>
+        <div style="width:36px; text-align:right; font-size:13px; font-weight:600; color:${w.color};">${pct}%</div>
+      </div>
+    `;
+  }).join('');
+
+  // 五行解读
+  const sheng = { wood:'water', fire:'wood', earth:'fire', metal:'earth', water:'metal' };
+  const ke = { wood:'metal', fire:'water', earth:'wood', metal:'fire', water:'earth' };
+  let analysis = '';
+  const dmName = WUXING[dayMasterElem].name;
+  analysis += `你是<strong style="color:${ec}">${dmName}日主</strong>，`;
+  if (strength === 'strong') analysis += `自身能量偏强，主观能动性强，有主见、有冲劲，适合向外开拓。`;
+  else if (strength === 'weak') analysis += `自身能量偏弱，适合借力而行，借助平台或团队的力量发展。`;
+  else analysis += `自身能量中和，能屈能伸，适应力强，进退皆宜。`;
+
+  // 找最旺和最弱的五行
+  let maxE = dmName, maxV = -1, minE = dmName, minV = 99;
+  for (let e in counts) {
+    if (counts[e] > maxV) { maxV = counts[e]; maxE = WUXING[e].name; }
+    if (counts[e] < minV) { minV = counts[e]; minE = WUXING[e].name; }
+  }
+  analysis += `命局中${maxE}气最旺，${minE}气偏弱。`;
+
+  // 喜用神说明
+  analysis += `你的喜用神为<strong style="color:${WUXING[xiYong[0]].color}">${WUXING[xiYong[0]].name}</strong>，`;
+  if (strength === 'weak') analysis += `补${WUXING[xiYong[0]].name}能增强自身能量，提升整体运势。`;
+  else if (strength === 'strong') analysis += `以${WUXING[xiYong[0]].name}来泄秀或平衡，让能量流动更顺畅。`;
+  else analysis += `补${WUXING[xiYong[0]].name}可补足命局短板。`;
+
+  document.getElementById('wuxingAnalysis').innerHTML = analysis;
+
+  // Cities
+  const mainElem = climate.need || xiYong[0];
+  const ed = WUXING[mainElem];
+  document.getElementById('cityIcon').textContent = ed.direction;
+  document.getElementById('cityIcon').style.background = ed.color + '22';
+  document.getElementById('cityIcon').style.color = ed.color;
+  document.getElementById('cityDesc').textContent = climate.desc;
+  document.getElementById('cityList').innerHTML = CITIES[mainElem].slice(0,3).map((c,i) => `
+    <div class="city-item">
+      <div class="city-rank" style="background:${['#e94560','#d4a04a','#4caf50'][i]}22; color:${['#e94560','#d4a04a','#4caf50'][i]}">${i+1}</div>
+      <div class="city-info">
+        <div class="city-name">${c.name}</div>
+        <div class="city-industry">${c.industries}</div>
+      </div>
+      <div class="city-score-bar"><div class="city-score-fill" style="width:${c.score}%; background:${ed.color}"></div></div>
+      <div class="city-percent" style="color:${ed.color}">${c.score}%</div>
+    </div>
+  `).join('');
+
+  // Industries
+  const indElem = xiYong[0];
+  const ie = WUXING[indElem];
+  document.getElementById('industryIcon').textContent = ie.name;
+  document.getElementById('industryIcon').style.background = ie.color + '22';
+  document.getElementById('industryIcon').style.color = ie.color;
+  document.getElementById('industryDesc').textContent = `你的适配能量为${ie.name}，在以下领域更容易发挥天赋。`;
+  document.getElementById('industryTags').innerHTML = INDUSTRIES[indElem].map(ind =>
+    `<span class="tag" style="background:${ie.color}18; color:${ie.color}; border:1px solid ${ie.color}44">${ind}</span>`
+  ).join('');
+
+  // Career
+  let maxK = 'corp', maxS = -1;
+  for (let k in careerScores) if (careerScores[k] > maxS) { maxS = careerScores[k]; maxK = k; }
+  document.getElementById('careerGrid').innerHTML = CAREER_PATHS.map(p =>
+    `<div class="career-item ${p.key === maxK ? 'recommended' : ''}">
+      <div class="career-item-name">${p.name}${p.key === maxK ? '<span class="career-badge">推荐</span>' : ''}</div>
+      <div class="career-item-desc">${p.desc}</div>
+    </div>`
+  ).join('');
+
+  renderCompare();
+
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderCompare() {
+  if (!resultData) return;
+  const c1 = document.getElementById('compareCity1').value;
+  const c2 = document.getElementById('compareCity2').value;
+  const dm = resultData.dayMasterElem;
+  const elem1 = CITY_ELEM[c1], elem2 = CITY_ELEM[c2];
+
+  const sheng = { wood:'fire', fire:'earth', earth:'metal', metal:'water', water:'wood' };
+  const ke = { wood:'earth', fire:'metal', earth:'water', metal:'wood', water:'fire' };
+  function score(cityElem) {
+    if (cityElem === dm) return 95;
+    if (sheng[cityElem] === dm) return 85;
+    if (sheng[dm] === cityElem) return 75;
+    if (ke[cityElem] === dm) return 65;
+    if (ke[dm] === cityElem) return 55;
+    return 70;
+  }
+  const s1 = score(elem1), s2 = score(elem2);
+
+  document.getElementById('compareResult').innerHTML = `
+    <div class="compare-city">
+      <div class="compare-city-name">${CITY_NAMES[c1]}</div>
+      <div class="compare-city-score" style="color:${WUXING[elem1].color}">${s1}</div>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-city">
+      <div class="compare-city-name">${CITY_NAMES[c2]}</div>
+      <div class="compare-city-score" style="color:${WUXING[elem2].color}">${s2}</div>
+    </div>
+  `;
+}
+
+// ===== Poster =====
+function generatePoster() {
+  const canvas = document.getElementById('posterCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 600, H = 900;
+
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#1a1a2e');
+  grad.addColorStop(1, '#0f0f1a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.beginPath();
+  ctx.arc(W/2, 180, 100, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(233,69,96,0.08)';
+  ctx.fill();
+
+  ctx.fillStyle = '#8888aa';
+  ctx.font = '14px "Noto Sans SC"';
+  ctx.textAlign = 'center';
+  ctx.fillText('五行人格测试', W/2, 80);
+
+  const typeKey = `${resultData.dayMasterElem}_${resultData.strength === 'medium' ? 'strong' : resultData.strength}`;
+  const pType = PERSONALITY_TYPES[typeKey];
+  const ec = WUXING[resultData.dayMasterElem].color;
+
+  ctx.fillStyle = ec;
+  ctx.font = 'bold 42px "Noto Serif SC"';
+  ctx.fillText(pType.name, W/2, 200);
+
+  ctx.fillStyle = '#8888aa';
+  ctx.font = '14px "Noto Sans SC"';
+  ctx.fillText(pType.tagline, W/2, 240);
+
+  ctx.strokeStyle = '#2a2a4a';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(80, 290); ctx.lineTo(W-80, 290); ctx.stroke();
+
+  let mainElem = resultData.climate.need || resultData.xiYong[0];
+  const cities = CITIES[mainElem].slice(0, 3);
+  ctx.fillStyle = '#e8e8f0';
+  ctx.font = 'bold 18px "Noto Sans SC"';
+  ctx.textAlign = 'left';
+  ctx.fillText('适合发展的城市', 60, 340);
+  cities.forEach((c, i) => {
+    const y = 380 + i * 45;
+    ctx.fillStyle = ec;
+    ctx.font = 'bold 16px "Noto Sans SC"';
+    ctx.fillText(`${i+1}. ${c.name}`, 80, y);
+    ctx.fillStyle = '#8888aa';
+    ctx.font = '12px "Noto Sans SC"';
+    ctx.fillText(c.industries, 180, y);
+  });
+
+  ctx.fillStyle = '#e8e8f0';
+  ctx.font = 'bold 18px "Noto Sans SC"';
+  ctx.fillText('适配事业赛道', 60, 550);
+  INDUSTRIES[resultData.xiYong[0]].slice(0, 6).forEach((ind, i) => {
+    const col = i % 2, row = Math.floor(i / 2);
+    ctx.fillStyle = ec;
+    ctx.font = '13px "Noto Sans SC"';
+    ctx.fillText(`· ${ind}`, 80 + col * 220, 585 + row * 30);
+  });
+
+  ctx.fillStyle = '#555577';
+  ctx.font = '12px "Noto Sans SC"';
+  ctx.textAlign = 'center';
+  ctx.fillText('扫码测测你的五行人格', W/2, 820);
+
+  document.getElementById('posterModal').classList.add('visible');
+}
+
+function downloadPoster() {
+  const canvas = document.getElementById('posterCanvas');
+  const link = document.createElement('a');
+  link.download = '五行人格测试.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function closePoster() {
+  document.getElementById('posterModal').classList.remove('visible');
+}
+
+function retake() {
+  document.getElementById('results').classList.remove('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
+<!-- （注：内容由AI生成） -->
